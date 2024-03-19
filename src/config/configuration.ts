@@ -20,4 +20,8 @@ export const configuration = () => ({
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
     credentials: true,
   },
+  data: {
+    dataFileName: 'meetings.xml',
+    dataDirPath: 'data',
+  },
 });

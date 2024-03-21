@@ -6,10 +6,17 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { MeetingsService } from 'service/meetings.service';
 import { MeetingsBodyRequest } from 'dto/request.dto';
@@ -18,11 +25,16 @@ import {
   MeetingsRequestBodyXmlSchema,
 } from 'dto/shemas.xml.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { MeetingResponce } from 'dto/responce.dto';
+import { MeetingsFormatter } from 'formatter/meetings.formatter';
 
 @ApiTags('Meetings')
 @Controller('meetings')
 export class MeetingsController {
-  constructor(private readonly meetingsService: MeetingsService) {}
+  constructor(
+    private readonly meetingsService: MeetingsService,
+    private readonly meetingsFormatter: MeetingsFormatter,
+  ) {}
 
   @Post('upload-meetings-json')
   @HttpCode(HttpStatus.CREATED)
@@ -56,7 +68,14 @@ export class MeetingsController {
   }
 
   @Get('by-date')
-  async getMeetingsByDate() {
-    const meetings = await this.meetingsService.getMeetingsByDate();
+  @ApiQuery({ name: 'dateUtc', required: true, type: Date })
+  @ApiResponse({ type: MeetingResponce, isArray: true })
+  async getMeetingsByDate(
+    @Query('dateUtc') dateUtcStr: Date,
+  ): Promise<MeetingResponce[]> {
+    const dateUtc = new Date(dateUtcStr);
+    const meetings = await this.meetingsService.getMeetingsByDate(dateUtc);
+
+    return this.meetingsFormatter.toMeetingsResponce(meetings);
   }
 }

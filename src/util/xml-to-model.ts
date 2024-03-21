@@ -2,6 +2,8 @@ import * as fsp from 'fs/promises';
 import * as xmlDom from 'xmldom';
 import { Injectable } from '@nestjs/common';
 
+import { ApplicationError } from 'common/aplication.error';
+
 @Injectable()
 export class XmlToObjectConverter {
   public async convertXmlToObject(filename: string): Promise<any> {
@@ -11,8 +13,7 @@ export class XmlToObjectConverter {
       const doc = parser.parseFromString(xmlString, 'text/xml');
       return this.parseNode(doc.documentElement);
     } catch (error) {
-      console.error(error);
-      return null;
+      throw new XmlFileNotExistError('Xml file not found');
     }
   }
 
@@ -61,3 +62,5 @@ export class XmlToObjectConverter {
     return obj;
   }
 }
+
+export class XmlFileNotExistError extends ApplicationError {}

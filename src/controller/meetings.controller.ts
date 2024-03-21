@@ -3,6 +3,8 @@ import {
   Controller,
   Get,
   Header,
+  HttpCode,
+  HttpStatus,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -23,6 +25,7 @@ export class MeetingsController {
   constructor(private readonly meetingsService: MeetingsService) {}
 
   @Post('upload-meetings-json')
+  @HttpCode(HttpStatus.CREATED)
   @Header('Content-Type', 'application/json')
   @ApiBody({ type: MeetingsBodyRequest })
   async uploadMeetingsDataJson(
@@ -32,6 +35,7 @@ export class MeetingsController {
   }
 
   @Post('upload-meetings-xml')
+  @HttpCode(HttpStatus.CREATED)
   @Header('Content-Type', 'application/xml')
   @ApiConsumes('application/xml')
   @ApiBody({ schema: MeetingsRequestBodyXmlSchema })
@@ -40,6 +44,7 @@ export class MeetingsController {
   }
 
   @Post('upload-meetings-xml-file')
+  @HttpCode(HttpStatus.CREATED)
   @Header('Content-Type', 'multipart/form-data')
   @ApiBody({ schema: MeetingsRequestBodyXmlFileSchema })
   @UseInterceptors(FileInterceptor('file'))
@@ -48,5 +53,10 @@ export class MeetingsController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<any> {
     await this.meetingsService.storeMeetingsXmlFile(file.buffer);
+  }
+
+  @Get('by-date')
+  async getMeetingsByDate() {
+    const meetings = await this.meetingsService.getMeetingsByDate();
   }
 }

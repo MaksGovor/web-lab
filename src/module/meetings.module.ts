@@ -4,6 +4,7 @@ import { MeetingsService } from 'service/meetings.service';
 import { XMLMiddleware } from 'middleware/xml.middleware';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
+import { XmlToObjectConverter } from 'util/xml-to-model';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [MeetingsController],
-  providers: [MeetingsService, ConfigService],
+  providers: [MeetingsService, ConfigService, XmlToObjectConverter],
 })
 export class MeetingsModule {
   configure(consumer: MiddlewareConsumer) {

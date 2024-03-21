@@ -28,7 +28,7 @@
         <tbody id="meetingsTableBody">
         <% meetings.forEach(meeting => { %>
             <tr>
-                <td><%= meeting.datetime %></td>
+                <td><%= meeting.datetime.toUTCString() %></td>
                 <td><%= meeting.personToMeet %></td>
                 <td><%= meeting.meetingPoint %></td>
             </tr>

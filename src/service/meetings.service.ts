@@ -77,8 +77,10 @@ export class MeetingsService {
       this.lastFileUpdate = mtime;
     }
 
+    const dateIsoString = date.toISOString().substring(0, 10);
     return this.meetings.filter(
-      (meeting) => meeting.datetime.getDate() === date.getDate(),
+      (meeting) =>
+        meeting.datetime.toISOString().substring(0, 10) === dateIsoString,
     );
   }
 }

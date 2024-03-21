@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Post,
   Query,
+  Render,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -27,6 +28,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MeetingResponce } from 'dto/responce.dto';
 import { MeetingsFormatter } from 'formatter/meetings.formatter';
+import { MeetingModel } from 'model/meeting.model';
 
 @ApiTags('Meetings')
 @Controller('meetings')
@@ -77,5 +79,17 @@ export class MeetingsController {
     const meetings = await this.meetingsService.getMeetingsByDate(dateUtc);
 
     return this.meetingsFormatter.toMeetingsResponce(meetings);
+  }
+
+  @Get('by-date-html')
+  @ApiQuery({ name: 'dateUtc', required: true, type: Date })
+  @Render('meetings')
+  async getMeetings(
+    @Query('dateUtc') dateUtcStr: Date,
+  ): Promise<{ meetings: MeetingModel[] }> {
+    const dateUtc = new Date(dateUtcStr);
+    const meetings = await this.meetingsService.getMeetingsByDate(dateUtc);
+
+    return { meetings };
   }
 }

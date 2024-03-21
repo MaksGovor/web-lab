@@ -1,24 +1,29 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
+import { join } from 'path';
 import {
   DocumentBuilder,
   OpenAPIObject,
   SwaggerDocumentOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { CorsConfig, SwaggerConfig } from 'config/interface';
 import { AppModule } from 'module/app.module';
 
 async function bootstrap() {
   const logger = new Logger(bootstrap.name);
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const configService = app.get(ConfigService);
   const corsConfig = configService.get<CorsConfig>('cors');
 
   app.enableCors(corsConfig);
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.setViewEngine('ejs');
 
   const swagger = configService.get<SwaggerConfig>('swagger');
   const swaggerConfig: Omit<OpenAPIObject, 'paths'> = new DocumentBuilder()

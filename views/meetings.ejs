@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meetings</title>
+    <!-- Підключення Bootstrap CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">Meetings</h1>
+
+    <!-- Поле введення дати -->
+    <div class="form-group">
+        <label for="datePicker">Choose date:</label>
+        <input type="date" class="form-control" id="datePicker">
+    </div>
+
+    <table class="table table-striped" id="meetingsTable">
+        <thead>
+        <tr>
+            <th>Date and Time</th>
+            <th>Person to Meet</th>
+            <th>Meeting Point</th>
+        </tr>
+        </thead>
+        <tbody id="meetingsTableBody">
+        <% meetings.forEach(meeting => { %>
+            <tr>
+                <td><%= meeting.datetime %></td>
+                <td><%= meeting.personToMeet %></td>
+                <td><%= meeting.meetingPoint %></td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const datePicker = document.getElementById('datePicker');
+    const meetingsTableBody = document.getElementById('meetingsTableBody');
+
+    datePicker.addEventListener('change', function() {
+      const selectedDate = datePicker.value;
+      const url = `/meetings/by-date-html?dateUtc=${selectedDate}`;
+
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          const tempDocument = document.createElement('html');
+          tempDocument.innerHTML = data;
+          const newTbody = tempDocument.querySelector('tbody');
+          meetingsTableBody.innerHTML = newTbody.innerHTML;
+        })
+        .catch(error => console.error(error));
+    });
+  });
+</script>
+</body>
+</html>
